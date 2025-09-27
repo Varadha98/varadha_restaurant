@@ -66,7 +66,7 @@ export default function LoginPage() {
         </button>
 
         <p className="mt-6 text-xs text-gray-600 text-center">
-          I agree to abide by Varadha's Terms of Service and Privacy Policy
+          I agree to abide by Varadha&apos;s Terms of Service
         </p>
       </div>
     </div>

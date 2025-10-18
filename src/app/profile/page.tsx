@@ -1,55 +1,86 @@
-import Carousel from "@/app/_components/carousel";
-import k4 from "@/assets/k4.jpg"
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+export default function ProfilePage() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const id = localStorage.getItem("userId");
+    if (id) {
+      setUserId(id);
+      fetchUserDetails(id);
+    }
+  }, []);
+
+  const fetchUserDetails = async (id: string) => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("users")
+      .select("username, password")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user:", error);
+    } else if (data) {
+      setUsername(data.username);
+      setPassword(data.password);
+    }
+    setLoading(false);
+  };
+
+  const handleSave = async () => {
+    if (!userId) return;
+    setLoading(true);
+    const { error } = await supabase
+      .from("users")
+      .update({ username, password })
+      .eq("id", userId);
+
+    if (error) {
+      alert("Failed to save user details");
+      console.error(error);
+    } else {
+      alert("User details updated successfully");
+    }
+    setLoading(false);
+  };
+
   return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-5">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6">Profile</h2>
 
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded-lg bg-black/10 backdrop-blur-lg shadow-lg" >
-  {/* Profile Picture */}
-  <div className="flex flex-col items-center">
-    <img
-      src="/default-avatar.png"
-      alt="Profile"
-      className="w-24 h-24 rounded-full object-cover"
-    />
-    <button className="mt-2 text-blue-500">Change Photo</button>
-  </div>
+        {loading && <p>Loading...</p>}
 
-  {/* User Info */}
-  <div className="mt-6 space-y-4">
-    <div>
-      <label className="block text-sm font-medium">Name</label>
-      <input
-        type="text"
-        className="w-full border p-2 rounded"
-        value="John Doe"
-      />
+        <label className="block mb-2">Username</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+
+        <label className="block mb-2">Password</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+
+        <button
+          onClick={handleSave}
+          className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600"
+        >
+          Save
+        </button>
+      </div>
     </div>
-    <div>
-      <label className="block text-sm font-medium">Email</label>
-      <input
-        type="email"
-        className="w-full border p-2 rounded"
-        value="john@example.com"
-        disabled
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-medium">Phone</label>
-      <input
-        type="tel"
-        className="w-full border p-2 rounded"
-        value="+91 9876543210"
-      />
-    </div>
-  </div>
-
-  {/* Actions */}
-  <div className="mt-6 flex justify-between">
-    <button className="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-    <button className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
-  </div>
-</div>
-
   );
 }

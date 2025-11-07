@@ -46,6 +46,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "./ClientLayout"; // relative to app/
+import { CartProvider } from "./context/CartContext";
 
 export const metadata: Metadata = {
   title: "My Restaurant",
@@ -57,7 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="antialiased">
         {/* ClientLayout will show Header/Footer except on auth pages */}
-        <ClientLayout>{children}</ClientLayout>
+        <CartProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </CartProvider>
+
       </body>
     </html>
   );

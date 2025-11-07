@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-
+import { useCart } from "@/app/context/CartContext"; 
 
 const menuItems = [
   {
@@ -52,7 +51,7 @@ useEffect(() => {
 }, []);
 
 const [quantities, setQuantities] = useState<Record<number, number>>({});
-
+const { addToCart } = useCart();
   useEffect(() => {
   const initial: Record<number, number> = {};
   menuItems.forEach(item => {
@@ -80,21 +79,11 @@ const decreaseQty = (id: number) => {
       <p className="text-sm text-gray-600">{item.description}</p>
       <p className="text-indigo-600 font-semibold mt-2">₹{item.price}</p>
 
-      {/* Quantity & Add to Cart */}
-      {/* <div className="flex items-center mt-3 space-x-2">
-        <button className="px-2 py-1 bg-gray-200 rounded">-</button>
-        <span>1</span>
-        <button className="px-2 py-1 bg-gray-200 rounded">+</button>
-        <button className="ml-auto bg-indigo-500 text-white px-3 py-1 rounded">
-          Add
-        </button>
-      </div> */}
-
       <div className="flex items-center mt-3 space-x-2">
   <button onClick={() => decreaseQty(item.id)} className="px-2 py-1 bg-gray-200 rounded">-</button>
   <span>{quantities[item.id]}</span>
   <button onClick={() => increaseQty(item.id)} className="px-2 py-1 bg-gray-200 rounded">+</button>
-  <button onClick={() => addToCart(item)} className="ml-auto bg-indigo-500 text-white px-3 py-1 rounded">
+  <button onClick={() => addToCart({ ...item, quantity: 1 })} className="ml-auto bg-indigo-500 text-white px-3 py-1 rounded">
     Add
   </button>
 </div>
